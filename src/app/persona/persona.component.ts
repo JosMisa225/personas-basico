@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 interface Persona {
   id: number;
@@ -15,7 +15,6 @@ interface Persona {
   templateUrl: './persona.component.html',
   styleUrl: './persona.component.css'
 })
-
 export class PersonaComponent {
   personas: Persona[] = [];
 
@@ -40,41 +39,44 @@ export class PersonaComponent {
     this.router.navigate(['/login']);
   }
 
+  editar(indice: number) {
+    this.indiceEditar = indice;
+    this.dni = this.personas[indice].dni;
+    this.nombre = this.personas[indice].nombre;
+    this.fechaNacimiento = this.personas[indice].fechaNacimiento;
+  }
+
   guardar() {
-    if (this.dni.trim() === '' || this.nombre.trim() === '' ||
-      this.fechaNacimiento === '') {
+    if (this.dni.trim() === '' || this.nombre.trim() === '' || this.fechaNacimiento === '') {
       alert('Complete los tres campos');
       return;
     }
+
     if (this.indiceEditar === -1) {
+
       let nuevoId = 1;
       for (const persona of this.personas) {
         if (persona.id >= nuevoId) {
           nuevoId = persona.id + 1;
         }
       }
+
       const nuevaPersona: Persona = {
         id: nuevoId,
         dni: this.dni.trim(),
         nombre: this.nombre.trim(),
         fechaNacimiento: this.fechaNacimiento
       };
+
       this.personas.push(nuevaPersona);
     } else {
       this.personas[this.indiceEditar].dni = this.dni.trim();
       this.personas[this.indiceEditar].nombre = this.nombre.trim();
-      this.personas[this.indiceEditar].fechaNacimiento =
-        this.fechaNacimiento;
+      this.personas[this.indiceEditar].fechaNacimiento = this.fechaNacimiento;
     }
+
     this.guardarEnLocalStorage();
     this.limpiar();
-  }
-
-  editar(indice: number) {
-    this.indiceEditar = indice;
-    this.dni = this.personas[indice].dni;
-    this.nombre = this.personas[indice].nombre;
-    this.fechaNacimiento = this.personas[indice].fechaNacimiento;
   }
 
   limpiar() {
@@ -83,9 +85,16 @@ export class PersonaComponent {
     this.fechaNacimiento = '';
     this.indiceEditar = -1;
   }
+
+  eliminar(indice: number) {
+    if (confirm('¿Eliminar esta persona?')) {
+      this.personas.splice(indice, 1);
+      this.guardarEnLocalStorage();
+      this.limpiar();
+    }
+  }
+
   guardarEnLocalStorage() {
-    localStorage.setItem('personasBasico',
-      JSON.stringify(this.personas));
+    localStorage.setItem('personasBasico', JSON.stringify(this.personas));
   }
 }
-
